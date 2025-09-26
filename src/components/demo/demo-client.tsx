@@ -13,7 +13,8 @@ import type { GenerateTamperReportOutput } from '@/ai/flows/generate-tamper-heat
 import ResultsDisplay from './results-display';
 import Image from 'next/image';
 
-type AnalysisResult = GenerateTamperReportOutput | { error: string };
+type AnalysisResult = (GenerateTamperReportOutput & { mediaDataUri?: string }) | { error: string };
+
 
 export default function DemoClient() {
   const [file, setFile] = useState<File | null>(null);
@@ -67,7 +68,9 @@ export default function DemoClient() {
         });
       } else {
         setResult(analysisResult);
-        setMediaPreviewUrl(URL.createObjectURL(file));
+        if (mediaPreviewUrl) { // Keep existing local object URL
+          setResult({ ...analysisResult });
+        }
       }
       setIsLoading(false);
     };
@@ -104,6 +107,7 @@ export default function DemoClient() {
 
     setIsLoading(true);
     setResult(null);
+    setMediaPreviewUrl(null);
     
     const analysisResult = await analyzeUrl(url);
     if ('error' in analysisResult) {
@@ -120,12 +124,13 @@ export default function DemoClient() {
   };
   
   const currentMediaName = file?.name || url.substring(url.lastIndexOf('/') + 1) || 'media';
+  const finalMediaUrl = file ? mediaPreviewUrl : (result && 'mediaDataUri' in result ? result.mediaDataUri : mediaPreviewUrl);
 
-  if (result && !('error' in result)) {
+  if (result && !('error' in result) && finalMediaUrl) {
     return (
       <ResultsDisplay
         result={result as GenerateTamperReportOutput}
-        mediaUrl={mediaPreviewUrl!}
+        mediaUrl={finalMediaUrl}
         mediaName={currentMediaName}
       />
     );
@@ -163,7 +168,7 @@ export default function DemoClient() {
                   <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
                   <p className="text-xs text-muted-foreground">MP4, MKV, WEBM</p>
                 </div>
-                <Input id="video-upload" type="file" className="hidden" accept="video/*" onChange={handleFilechange} />
+                <Input id="video-upload" type="file" className="hidden" accept="video/*" onChange={handleFileChange} />
               </label>
               <Button onClick={handleFileAnalysis} disabled={isLoading || !file} className="w-full">
                 {isLoading ? <Loader2 className="animate-spin" /> : 'Analyze Video'}
@@ -188,9 +193,9 @@ export default function DemoClient() {
         {mediaPreviewUrl && !result && (
           <div className="mt-4">
             <h3 className="font-semibold text-center mb-2">Preview</h3>
-            {file?.type.startsWith('image/') || mediaPreviewUrl.startsWith('data:image') ? (
+            {file?.type.startsWith('image/') ? (
               <Image src={mediaPreviewUrl} alt="Preview" width={400} height={300} className="rounded-lg mx-auto object-contain" />
-            ) : file?.type.startsWith('video/') || mediaPreviewUrl.startsWith('data:video') ? (
+            ) : file?.type.startsWith('video/') ? (
               <video src={mediaPreviewUrl} controls className="rounded-lg mx-auto w-full max-w-md"></video>
             ) : null}
           </div>
