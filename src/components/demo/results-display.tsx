@@ -75,9 +75,15 @@ export default function ResultsDisplay({ result, mediaFile }: ResultsDisplayProp
   return (
     <Card className="border-border">
       <CardHeader>
-        <CardTitle className="text-center text-2xl">Analysis Results</CardTitle>
+        <div className="flex justify-between items-center">
+            <CardTitle className="text-center text-2xl flex-1">Analysis Results</CardTitle>
+            <Button variant="outline" size="sm" onClick={handleDownloadPdf} disabled={isDownloading}>
+                <Download className="mr-2 h-4 w-4" />
+                {isDownloading ? 'Downloading...' : 'Download PDF'}
+            </Button>
+        </div>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent ref={reportRef} className="space-y-6">
         <div className="text-center">
           <h3 className="text-sm font-medium text-muted-foreground">Verdict</h3>
           <Badge className={cn("text-lg mt-1", getVerdictStyles(result.verdict))}>
@@ -111,13 +117,9 @@ export default function ResultsDisplay({ result, mediaFile }: ResultsDisplayProp
           <div className="space-y-4 md:col-span-1">
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-semibold text-center flex-1">Evidence Report</h3>
-                <Button variant="outline" size="sm" onClick={handleDownloadPdf} disabled={isDownloading}>
-                    <Download className="mr-2 h-4 w-4" />
-                    {isDownloading ? 'Downloading...' : 'Download PDF'}
-                </Button>
               </div>
               <Card>
-                  <CardContent ref={reportRef} className="p-6 prose prose-invert prose-sm max-w-none h-[500px] overflow-y-auto">
+                  <CardContent className="p-6 prose prose-invert prose-sm max-w-none h-[500px] overflow-y-auto">
                        <div dangerouslySetInnerHTML={{ __html: reportHTML }} />
                   </CardContent>
               </Card>
