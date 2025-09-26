@@ -12,7 +12,6 @@ import { SignedIn, SignedOut, UserButton, useAuth } from "@clerk/nextjs";
 const navLinks = [
   { href: "/media-analysis", label: "Media Analysis", auth: true },
   { href: "/verification-badge", label: "Verification Badge", auth: true },
-  { href: "/fake-index", label: "Fake Index", auth: true },
   { href: "/training", label: "Training", auth: true },
   { href: "/how-it-works", label: "How It Works" },
   { href: "/extension", label: "Extension" },
