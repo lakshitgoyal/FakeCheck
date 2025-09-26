@@ -48,7 +48,7 @@ export default function ResultsDisplay({ result, mediaFile }: ResultsDisplayProp
 
         <Separator />
         
-        <div className="grid grid-cols-1 gap-6 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-center">Input Media</h3>
             <div className="max-w-md mx-auto">
@@ -69,7 +69,7 @@ export default function ResultsDisplay({ result, mediaFile }: ResultsDisplayProp
                 )}
               </div>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-4 md:col-span-1">
               <h3 className="text-lg font-semibold text-center">Evidence Report</h3>
               <Card>
                   <CardContent className="p-6 prose prose-invert prose-sm max-w-none h-[500px] overflow-y-auto">

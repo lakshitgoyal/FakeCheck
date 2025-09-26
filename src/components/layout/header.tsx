@@ -10,6 +10,7 @@ import { Logo } from "../icons/logo";
 
 const navLinks = [
   { href: "/demo", label: "Live Demo" },
+  { href: "/fake-index", label: "Fake Index" },
   { href: "/how-it-works", label: "How It Works" },
   { href: "/features", label: "Features" },
   { href: "/pricing", label: "Pricing" },
