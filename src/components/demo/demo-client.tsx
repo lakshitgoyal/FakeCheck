@@ -115,9 +115,9 @@ export default function DemoClient() {
             </div>
         )}
 
-        {result && !('error' in result) && (
+        {result && !('error' in result) && file && (
             <div className="mt-6">
-                <ResultsDisplay result={result} />
+                <ResultsDisplay result={result} mediaFile={file} />
             </div>
         )}
       </CardContent>

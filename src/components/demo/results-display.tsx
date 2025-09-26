@@ -6,12 +6,14 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { Download, Copy, Share2 } from "lucide-react";
+import Image from 'next/image';
 
 interface ResultsDisplayProps {
   result: GenerateTamperReportOutput;
+  mediaFile: File;
 }
 
-export default function ResultsDisplay({ result }: ResultsDisplayProps) {
+export default function ResultsDisplay({ result, mediaFile }: ResultsDisplayProps) {
   const confidencePercent = Math.round(result.confidenceScore * 100);
 
   const getVerdictStyles = (verdict: string) => {
@@ -33,6 +35,7 @@ export default function ResultsDisplay({ result }: ResultsDisplayProps) {
     .replace(/<\/h3>\n?<ul>/g, '</h3><ul class="list-disc list-inside text-muted-foreground">')
     .replace(/<\/ul>\n?<p>/g, '</ul><p class="text-muted-foreground">');
 
+  const mediaPreviewUrl = URL.createObjectURL(mediaFile);
 
   return (
     <Card className="border-border">
@@ -56,13 +59,33 @@ export default function ResultsDisplay({ result }: ResultsDisplayProps) {
 
         <Separator />
         
-        <div>
-            <h3 className="text-lg font-semibold mb-4 text-center">Evidence Report</h3>
-            <Card>
-                <CardContent className="p-6 prose prose-invert prose-sm max-w-none">
-                     <div dangerouslySetInnerHTML={{ __html: reportHTML }} />
-                </CardContent>
-            </Card>
+        <div className="grid md:grid-cols-2 gap-6 items-start">
+          <div>
+            <h3 className="text-lg font-semibold mb-2 text-center">Input Media</h3>
+            {mediaFile.type.startsWith('image/') ? (
+              <Image
+                src={mediaPreviewUrl}
+                alt="Input media preview"
+                width={400}
+                height={400}
+                className="rounded-lg w-full h-auto object-contain"
+              />
+            ) : (
+              <video
+                src={mediaPreviewUrl}
+                controls
+                className="rounded-lg w-full"
+              />
+            )}
+          </div>
+          <div>
+              <h3 className="text-lg font-semibold mb-2 text-center">Evidence Report</h3>
+              <Card>
+                  <CardContent className="p-6 prose prose-invert prose-sm max-w-none h-64 overflow-y-auto">
+                       <div dangerouslySetInnerHTML={{ __html: reportHTML }} />
+                  </CardContent>
+              </Card>
+          </div>
         </div>
 
         <Separator />
