@@ -58,7 +58,6 @@ Media to analyze: {{media url=mediaDataUri}}
 ### **Overall Assessment**
 - Provide a concise summary of the findings in 2–3 sentences.
 - Explicitly state the **verdict label** ("Safe", "Suspicious", or "Likely Manipulated").  
-- Mention the confidence level (0–1, two decimal places).
 
 ### **Key Indicators**
 - Bullet-point list of the most relevant anomalies.  
@@ -89,7 +88,6 @@ Media to analyze: {{media url=mediaDataUri}}
 - Report **must** be in Markdown.  
 - Use clear section headers and bullet points where specified.  
 - Always include a **verdict label**.  
-- Always include a **confidence score (0–1)**.  
 - If no anomalies are found, explicitly state that no manipulation was detected.`,
 });
 
