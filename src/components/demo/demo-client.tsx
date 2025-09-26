@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ImageIcon, VideoIcon, LinkIcon, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { performAnalysis, analyzeUrl } from '@/lib/actions';
-import type { GenerateTamperReportOutput } from '@/ai/flows/generate-tamper-report';
+import type { GenerateTamperReportOutput } from '@/ai/flows/generate-tamper-heatmaps';
 import ResultsDisplay from './results-display';
 
 type AnalysisResult = GenerateTamperReportOutput | { error: string };
@@ -117,7 +117,9 @@ export default function DemoClient() {
             variant: 'destructive',
         });
     } else {
-        const mockFile = new File([''], new URL(url).pathname.split('/').pop() || 'analysis-from-url.jpg', { type: 'image/jpeg' });
+        // Create a mock file for display purposes in the results view
+        const fileName = new URL(url).pathname.split('/').pop() || 'media.jpg';
+        const mockFile = new File([''], fileName, { type: 'image/jpeg' });
         setFile(mockFile);
         setResult(analysisResult);
     }
