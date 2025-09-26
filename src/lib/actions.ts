@@ -1,6 +1,6 @@
 'use server';
 
-import { generateTamperReport, type GenerateTamperReportOutput } from '@/ai/flows/generate-tamper-report';
+import { generateTamperReport, type GenerateTamperReportOutput } from '../ai/flows/generate-tamper-report';
 import axios from 'axios';
 
 export async function performAnalysis(mediaDataUri: string): Promise<GenerateTamperReportOutput | { error: string }> {
