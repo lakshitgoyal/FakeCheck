@@ -45,14 +45,6 @@ const mockAlerts = [
     confidence_score: 78,
     timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
   },
-  {
-    id: '4',
-    content_url: 'https://www.tiktok.com/@tiktok/video/7374635398284561694',
-    platform: 'TikTok',
-    status: 'Safe',
-    confidence_score: 12,
-    timestamp: new Date(Date.now() - 1000 * 60 * 45), // 45 minutes ago
-  },
 ];
 
 const getVerdictStyles = (verdict: string) => {
