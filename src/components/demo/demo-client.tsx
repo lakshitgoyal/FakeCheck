@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -77,6 +78,15 @@ export default function DemoClient() {
     };
   };
 
+  const isValidUrl = (urlString: string) => {
+    try {
+      new URL(urlString);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
+
   const handleUrlAnalysis = async () => {
     if (!url) {
         toast({
@@ -86,22 +96,36 @@ export default function DemoClient() {
         });
         return;
     }
+
+    if (!isValidUrl(url)) {
+      toast({
+        title: 'Invalid URL',
+        description: 'Please enter a valid URL (e.g., https://example.com/media.jpg).',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsLoading(true);
     setResult(null);
 
-    // Simulate analysis by using a placeholder.
-    // In a real implementation, the backend would fetch and process the URL.
+    // This is a simulated analysis. For security reasons, this tool cannot directly
+    // access and fetch content from external URLs. A production implementation
+    // would require a backend service to handle fetching.
+    toast({
+        title: 'Simulated Analysis',
+        description: 'URL analysis is for demonstration only. A placeholder is being analyzed.',
+    });
     const analysisResult = await performAnalysis(PLACEHOLDER_DATA_URI);
 
     if ('error' in analysisResult) {
         toast({
             title: 'Analysis Failed',
             description: analysisResult.error,
-            variant: 'destructive',
         });
     } else {
         // Create a mock file object for the results display
-        const mockFile = new File([''], "analysis-from-url.jpg", { type: 'image/jpeg' });
+        const mockFile = new File([''], new URL(url).pathname.split('/').pop() || 'analysis-from-url.jpg', { type: 'image/jpeg' });
         setFile(mockFile);
         setResult(analysisResult);
     }
@@ -142,7 +166,7 @@ export default function DemoClient() {
             )}
         </Button>
         <p className="text-xs text-center text-muted-foreground">
-            Enter a direct URL to an image or video.
+            Enter a direct URL to an image or video. Analysis is simulated.
         </p>
     </div>
   );
@@ -183,3 +207,5 @@ export default function DemoClient() {
     </Card>
   );
 }
+
+    
