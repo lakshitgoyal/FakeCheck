@@ -1,4 +1,3 @@
-
 'use server';
 
 import { generateTamperReport, type GenerateTamperReportOutput } from '@/ai/flows/generate-tamper-heatmaps';
@@ -28,8 +27,8 @@ export async function analyzeUrl(url: string): Promise<AnalyzeUrlSuccess | { err
     });
     
     const contentType = response.headers['content-type'];
-    if (!contentType || (!contentType.startsWith('image/') && !contentType.startsWith('video/'))) {
-      return { error: 'The URL does not point to a valid image or video file.' };
+    if (!contentType || (!contentType.startsWith('image/') && !contentType.startsWith('video/') && !contentType.startsWith('audio/'))) {
+      return { error: 'The URL does not point to a valid image, video, or audio file.' };
     }
 
     const buffer = Buffer.from(response.data, 'binary');
@@ -48,7 +47,7 @@ export async function analyzeUrl(url: string): Promise<AnalyzeUrlSuccess | { err
     if (e.code === 'ERR_BAD_REQUEST' || e.response?.status === 404) {
       return { error: 'Could not access the URL. Please check if it is correct and publicly accessible.' };
     }
-    if (e.code === 'ERR_CONTENT_LENGTH_MISMATCH' || e.message.includes('maxContentLength')) {
+    if (e.code === 'ERR_CONTENT_LENGTH_MISMATCH' || (e.message && e.message.includes('maxContentLength'))) {
       return { error: 'The file at the URL is too large to process.'}
     }
 
