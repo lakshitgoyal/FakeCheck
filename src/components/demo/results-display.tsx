@@ -2,7 +2,6 @@ import type { GenerateTamperReportOutput } from "@/ai/flows/generate-tamper-heat
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { Download, Copy, Share2 } from "lucide-react";
@@ -14,7 +13,6 @@ interface ResultsDisplayProps {
 }
 
 export default function ResultsDisplay({ result, mediaFile }: ResultsDisplayProps) {
-  const confidencePercent = Math.round(result.confidenceScore * 100);
 
   const getVerdictStyles = (verdict: string) => {
     switch (verdict) {
@@ -43,43 +41,40 @@ export default function ResultsDisplay({ result, mediaFile }: ResultsDisplayProp
         <CardTitle className="text-center text-2xl">Analysis Results</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid grid-cols-2 gap-6 text-center">
+        <div className="grid grid-cols-1 gap-6 text-center">
           <div>
             <h3 className="text-sm font-medium text-muted-foreground">Verdict</h3>
             <Badge className={cn("text-lg mt-1", getVerdictStyles(result.verdict))}>
               {result.verdict}
             </Badge>
           </div>
-          <div>
-            <h3 className="text-sm font-medium text-muted-foreground">Confidence</h3>
-            <p className="text-2xl font-bold">{confidencePercent}%</p>
-            <Progress value={confidencePercent} className="mt-2 h-2" />
-          </div>
         </div>
 
         <Separator />
         
-        <div className="space-y-6">
-          <div className="max-w-md mx-auto">
-            <h3 className="text-lg font-semibold mb-2 text-center">Input Media</h3>
-            {mediaFile.type.startsWith('image/') ? (
-              <Image
-                src={mediaPreviewUrl}
-                alt="Input media preview"
-                width={400}
-                height={400}
-                className="rounded-lg w-full h-auto object-contain"
-              />
-            ) : (
-              <video
-                src={mediaPreviewUrl}
-                controls
-                className="rounded-lg w-full"
-              />
-            )}
+        <div className="grid md:grid-cols-2 gap-6 items-start">
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-center">Input Media</h3>
+            <div className="max-w-md mx-auto">
+                {mediaFile.type.startsWith('image/') ? (
+                  <Image
+                    src={mediaPreviewUrl}
+                    alt="Input media preview"
+                    width={400}
+                    height={400}
+                    className="rounded-lg w-full h-auto object-contain"
+                  />
+                ) : (
+                  <video
+                    src={mediaPreviewUrl}
+                    controls
+                    className="rounded-lg w-full"
+                  />
+                )}
+              </div>
           </div>
-          <div>
-              <h3 className="text-lg font-semibold mb-2 text-center">Evidence Report</h3>
+          <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-center">Evidence Report</h3>
               <Card>
                   <CardContent className="p-6 prose prose-invert prose-sm max-w-none h-96 overflow-y-auto">
                        <div dangerouslySetInnerHTML={{ __html: reportHTML }} />

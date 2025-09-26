@@ -26,8 +26,7 @@ const GenerateTamperReportOutputSchema = z.object({
     .describe(
       'A detailed markdown report of the analysis, including potential manipulations.'
     ),
-  confidenceScore: z.number().describe('The confidence score of the manipulation detection.'),
-  verdict: z.enum(['Safe', 'Suspicious', 'Likely Manipulated']).describe('Verdict label based on the confidence score'),
+  verdict: z.enum(['Safe', 'Suspicious', 'Likely Manipulated']).describe('Verdict label based on the analysis'),
 });
 export type GenerateTamperReportOutput = z.infer<typeof GenerateTamperReportOutputSchema>;
 
@@ -39,12 +38,12 @@ const prompt = ai.definePrompt({
   name: 'generateTamperReportPrompt',
   input: {schema: GenerateTamperReportInputSchema},
   output: {schema: GenerateTamperReportOutputSchema},
-  prompt: `You are an AI-powered deepfake detection system. You will analyze the provided image or video and generate a detailed report in markdown format, highlighting areas of potential manipulation. You will also return a confidence score and a verdict label based on the analysis. Here is the media to analyze: {{media url=mediaDataUri}}.
+  prompt: `You are an AI-powered deepfake detection system. You will analyze the provided image or video and generate a detailed report in markdown format, highlighting areas of potential manipulation. You will also return a verdict label based on the analysis. Here is the media to analyze: {{media url=mediaDataUri}}.
 
-Confidence Score Guidelines:
-- High confidence (0.75 - 1.0): Likely Manipulated
-- Medium confidence (0.4 - 0.74): Suspicious
-- Low confidence (0.0 - 0.39): Safe
+Verdict Guidelines:
+- If manipulation is almost certain: Likely Manipulated
+- If there are suspicious signs but no certainty: Suspicious
+- If no signs of manipulation are found: Safe
 
 Your report should be structured with the following sections:
 - **Overall Assessment**: A summary of your findings.
@@ -61,7 +60,7 @@ const generateTamperReportFlow = ai.defineFlow(
   },
   async input => {
     // In a real app, you would call an AI model. For this demo, we'll use a mock.
-    const mockConfidenceScore = Math.random();
+    const mockRandomValue = Math.random();
     let mockVerdict: 'Safe' | 'Suspicious' | 'Likely Manipulated' = 'Safe';
     let mockReport = `### Overall Assessment
 The provided media appears to be authentic. No significant indicators of manipulation were detected.
@@ -77,7 +76,7 @@ A thorough review of the media file shows no significant signs of manipulation. 
 ### Forensic Traces
 Our low-level analysis did not reveal any anomalies. The camera sensor noise pattern is uniform throughout the image, and the Color Filter Array (CFA) interpolation patterns are consistent with a single capture device. No PRNU mismatches were found.`;
 
-    if (mockConfidenceScore > 0.75) {
+    if (mockRandomValue > 0.75) {
       mockVerdict = 'Likely Manipulated';
       mockReport = `### Overall Assessment
 The media shows strong indicators of manipulation, consistent with AI-powered "deepfake" techniques.
@@ -92,7 +91,7 @@ The subject appears to be digitally inserted into the scene. The lighting on the
 
 ### Forensic Traces
 Forensic analysis reveals a significant mismatch in the Photo Response Non-Uniformity (PRNU) pattern between the subject's face and the rest of the image. This strongly suggests that the facial region was sourced from a different camera than the one that captured the original image. Additionally, we noted inconsistencies in the JPEG quantization tables, indicating re-compression.`;
-    } else if (mockConfidenceScore > 0.4) {
+    } else if (mockRandomValue > 0.4) {
       mockVerdict = 'Suspicious';
       mockReport = `### Overall Assessment
 The media contains some suspicious artifacts that warrant closer inspection, but we cannot definitively conclude it has been manipulated.
@@ -111,7 +110,6 @@ Our tools detected a minor anomaly in the Color Filter Array (CFA) pattern in a 
 
     return {
       report: mockReport,
-      confidenceScore: mockConfidenceScore,
       verdict: mockVerdict,
     };
   }
