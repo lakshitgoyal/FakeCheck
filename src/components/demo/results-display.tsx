@@ -59,8 +59,8 @@ export default function ResultsDisplay({ result, mediaFile }: ResultsDisplayProp
 
         <Separator />
         
-        <div className="grid md:grid-cols-2 gap-6 items-start">
-          <div>
+        <div className="space-y-6">
+          <div className="max-w-md mx-auto">
             <h3 className="text-lg font-semibold mb-2 text-center">Input Media</h3>
             {mediaFile.type.startsWith('image/') ? (
               <Image
@@ -81,7 +81,7 @@ export default function ResultsDisplay({ result, mediaFile }: ResultsDisplayProp
           <div>
               <h3 className="text-lg font-semibold mb-2 text-center">Evidence Report</h3>
               <Card>
-                  <CardContent className="p-6 prose prose-invert prose-sm max-w-none h-64 overflow-y-auto">
+                  <CardContent className="p-6 prose prose-invert prose-sm max-w-none h-96 overflow-y-auto">
                        <div dangerouslySetInnerHTML={{ __html: reportHTML }} />
                   </CardContent>
               </Card>
