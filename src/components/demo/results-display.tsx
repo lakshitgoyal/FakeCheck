@@ -1,4 +1,4 @@
-import type { GenerateTamperHeatmapOutput } from "@/ai/flows/generate-tamper-heatmaps";
+import type { GenerateTamperReportOutput } from "@/ai/flows/generate-tamper-heatmaps";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,10 +6,9 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { Download, Copy, Share2 } from "lucide-react";
-import Image from "next/image";
 
 interface ResultsDisplayProps {
-  result: GenerateTamperHeatmapOutput;
+  result: GenerateTamperReportOutput;
 }
 
 export default function ResultsDisplay({ result }: ResultsDisplayProps) {
@@ -27,6 +26,13 @@ export default function ResultsDisplay({ result }: ResultsDisplayProps) {
         return "bg-secondary";
     }
   };
+
+  const reportHTML = result.report
+    .replace(/### (.*)/g, '<h3 class="text-lg font-semibold mt-4 mb-2">$1</h3>')
+    .replace(/\* (.*)/g, '<li class="ml-4">$1</li>')
+    .replace(/<\/h3>\n?<ul>/g, '</h3><ul class="list-disc list-inside text-muted-foreground">')
+    .replace(/<\/ul>\n?<p>/g, '</ul><p class="text-muted-foreground">');
+
 
   return (
     <Card className="border-border">
@@ -51,24 +57,10 @@ export default function ResultsDisplay({ result }: ResultsDisplayProps) {
         <Separator />
         
         <div>
-            <h3 className="text-lg font-semibold mb-4 text-center">Evidence Panel</h3>
+            <h3 className="text-lg font-semibold mb-4 text-center">Evidence Report</h3>
             <Card>
-                <CardHeader>
-                    <CardTitle className="text-base">Tamper Map</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-sm text-muted-foreground mb-4">
-                        This heatmap highlights areas with a higher probability of being manipulated. Brighter areas indicate stronger signals of tampering.
-                    </p>
-                    <div className="flex justify-center bg-black rounded-lg p-2">
-                        <Image
-                            src={result.heatmapDataUri}
-                            alt="Tamper heatmap"
-                            width={500}
-                            height={300}
-                            className="object-contain"
-                        />
-                    </div>
+                <CardContent className="p-6 prose prose-invert prose-sm max-w-none">
+                     <div dangerouslySetInnerHTML={{ __html: reportHTML }} />
                 </CardContent>
             </Card>
         </div>

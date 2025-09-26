@@ -8,10 +8,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ImageIcon, VideoIcon, WebcamIcon, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { performAnalysis } from '@/lib/actions';
-import type { GenerateTamperHeatmapOutput } from '@/ai/flows/generate-tamper-heatmaps';
+import type { GenerateTamperReportOutput } from '@/ai/flows/generate-tamper-heatmaps';
 import ResultsDisplay from './results-display';
 
-type AnalysisResult = GenerateTamperHeatmapOutput | { error: string };
+type AnalysisResult = GenerateTamperReportOutput | { error: string };
 
 export default function DemoClient() {
   const [file, setFile] = useState<File | null>(null);

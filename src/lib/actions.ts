@@ -1,9 +1,9 @@
 
 'use server';
 
-import { generateTamperHeatmap, type GenerateTamperHeatmapOutput } from '@/ai/flows/generate-tamper-heatmaps';
+import { generateTamperReport, type GenerateTamperReportOutput } from '@/ai/flows/generate-tamper-heatmaps';
 
-export async function performAnalysis(mediaDataUri: string): Promise<GenerateTamperHeatmapOutput | { error: string }> {
+export async function performAnalysis(mediaDataUri: string): Promise<GenerateTamperReportOutput | { error: string }> {
   if (!mediaDataUri || typeof mediaDataUri !== 'string') {
     return { error: 'Invalid media data URI provided.' };
   }
@@ -11,7 +11,7 @@ export async function performAnalysis(mediaDataUri: string): Promise<GenerateTam
   try {
     // In a real app, you would call the actual AI model.
     // The provided flow is a mock, so we use it directly.
-    const result = await generateTamperHeatmap({ mediaDataUri });
+    const result = await generateTamperReport({ mediaDataUri });
     return result;
   } catch (e) {
     console.error("Analysis failed:", e);
