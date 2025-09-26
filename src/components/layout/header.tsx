@@ -7,11 +7,11 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "../icons/logo";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, UserButton, useAuth } from "@clerk/nextjs";
 
 const navLinks = [
-  { href: "/demo", label: "Live Demo" },
-  { href: "/fake-index", label: "Fake Index" },
+  { href: "/media-analysis", label: "Media Analysis", auth: true },
+  { href: "/fake-index", label: "Fake Index", auth: true },
   { href: "/how-it-works", label: "How It Works" },
   { href: "/features", label: "Features" },
   { href: "/pricing", label: "Pricing" },
@@ -20,18 +20,39 @@ const navLinks = [
 
 export default function Header() {
   const pathname = usePathname();
+  const { isSignedIn } = useAuth();
 
-  const NavLink = ({ href, label }: { href: string; label: string }) => (
-    <Link
-      href={href}
-      className={cn(
-        "text-sm font-medium transition-colors hover:text-primary",
-        pathname === href ? "text-primary" : "text-muted-foreground"
-      )}
-    >
-      {label}
-    </Link>
-  );
+  const NavLink = ({ href, label, auth }: { href: string; label: string, auth?: boolean }) => {
+    const finalHref = (auth && !isSignedIn) ? '/sign-up' : href;
+    return (
+      <Link
+        href={finalHref}
+        className={cn(
+          "text-sm font-medium transition-colors hover:text-primary",
+          pathname === href ? "text-primary" : "text-muted-foreground"
+        )}
+      >
+        {label}
+      </Link>
+    );
+  };
+
+  const MobileNavLink = ({ href, label, auth }: { href: string; label: string, auth?: boolean }) => {
+    const finalHref = (auth && !isSignedIn) ? '/sign-up' : href;
+    return (
+      <Link
+        href={finalHref}
+        className={cn(
+          "text-lg font-medium transition-colors hover:text-primary",
+          pathname === href
+            ? "text-primary"
+            : "text-foreground"
+        )}
+      >
+        {label}
+      </Link>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -63,18 +84,7 @@ export default function Header() {
               </Link>
               <div className="flex flex-col space-y-4 p-6">
                 {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={cn(
-                      "text-lg font-medium transition-colors hover:text-primary",
-                      pathname === link.href
-                        ? "text-primary"
-                        : "text-foreground"
-                    )}
-                  >
-                    {link.label}
-                  </Link>
+                  <MobileNavLink key={link.href} {...link} />
                 ))}
               </div>
             </SheetContent>

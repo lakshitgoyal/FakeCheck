@@ -23,7 +23,7 @@ const tier = {
     "Dedicated 24/7 support"
   ],
   cta: "Get Started",
-  href: "/demo",
+  href: "/media-analysis",
   variant: "default",
   isPrimary: true,
 };

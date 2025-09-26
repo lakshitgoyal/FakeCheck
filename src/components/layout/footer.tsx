@@ -28,7 +28,7 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="/demo" className="text-muted-foreground hover:text-primary">
+              <Link href="/media-analysis" className="text-muted-foreground hover:text-primary">
                 Demo
               </Link>
             </li>
