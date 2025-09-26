@@ -20,6 +20,7 @@ export default function DemoClient() {
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [mediaPreviewUrl, setMediaPreviewUrl] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,7 +28,8 @@ export default function DemoClient() {
     if (selectedFile) {
       setFile(selectedFile);
       setUrl('');
-      setResult(null); 
+      setResult(null);
+      setMediaPreviewUrl(URL.createObjectURL(selectedFile));
     }
   };
 
@@ -35,6 +37,7 @@ export default function DemoClient() {
     setUrl(event.target.value);
     setFile(null);
     setResult(null);
+    setMediaPreviewUrl(null);
   };
 
   const handleAnalysis = async () => {
@@ -64,6 +67,7 @@ export default function DemoClient() {
         });
       } else {
         setResult(analysisResult);
+        setMediaPreviewUrl(URL.createObjectURL(file));
       }
       setIsLoading(false);
     };
@@ -110,21 +114,33 @@ export default function DemoClient() {
 
     const analysisResult = await analyzeUrl(url);
 
-    if ('error' in analysisResult) {
+    if (analysisResult && 'error' in analysisResult) {
         toast({
             title: 'Analysis Failed',
             description: analysisResult.error,
             variant: 'destructive',
         });
-    } else {
-        // Create a mock file for display purposes in the results view
-        const fileName = new URL(url).pathname.split('/').pop() || 'media.jpg';
-        const mockFile = new File([''], fileName, { type: 'image/jpeg' });
-        setFile(mockFile);
+    } else if (analysisResult) {
         setResult(analysisResult);
+        // The mediaDataUri is returned from the server action
+        if ('mediaDataUri' in analysisResult && typeof analysisResult.mediaDataUri === 'string') {
+          setMediaPreviewUrl(analysisResult.mediaDataUri);
+        }
     }
     setIsLoading(false);
   };
+
+  const getFileOrUrlName = () => {
+    if (file) return file.name;
+    if (url) {
+      try {
+        return new URL(url).pathname.split('/').pop() || 'media_from_url';
+      } catch {
+        return 'media_from_url';
+      }
+    }
+    return '';
+  }
 
   const renderUploadForm = (accept: string, type: string) => (
     <div className="space-y-4">
@@ -192,9 +208,9 @@ export default function DemoClient() {
             </div>
         )}
 
-        {result && !('error' in result) && file && (
+        {result && !('error' in result) && mediaPreviewUrl && (
             <div className="mt-6">
-                <ResultsDisplay result={result} mediaFile={file} />
+                <ResultsDisplay result={result} mediaUrl={mediaPreviewUrl} mediaName={getFileOrUrlName()} />
             </div>
         )}
       </CardContent>

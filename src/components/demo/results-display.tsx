@@ -1,6 +1,7 @@
+
 "use client";
 
-import type { GenerateTamperReportOutput } from "@/ai/flows/generate-tamper-report";
+import type { GenerateTamperReportOutput } from "@/ai/flows/generate-tamper-heatmaps";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,10 +14,11 @@ import { useRef, useState } from "react";
 
 interface ResultsDisplayProps {
   result: GenerateTamperReportOutput;
-  mediaFile: File;
+  mediaUrl: string;
+  mediaName: string;
 }
 
-export default function ResultsDisplay({ result, mediaFile }: ResultsDisplayProps) {
+export default function ResultsDisplay({ result, mediaUrl, mediaName }: ResultsDisplayProps) {
   const reportRef = useRef<HTMLDivElement>(null);
   const mediaPreviewRef = useRef<HTMLImageElement | HTMLVideoElement | HTMLAudioElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -107,7 +109,7 @@ export default function ResultsDisplay({ result, mediaFile }: ResultsDisplayProp
         }
     } else {
         pdf.setFontSize(12);
-        pdf.text(`Input File: ${mediaFile.name}`, margin, yPos);
+        pdf.text(`Input File: ${mediaName}`, margin, yPos);
         yPos += 20;
     }
 
@@ -160,7 +162,9 @@ export default function ResultsDisplay({ result, mediaFile }: ResultsDisplayProp
     .replace(/<\/h3>\n?<ul>/g, '</h3><ul class="list-disc list-inside text-muted-foreground">')
     .replace(/<\/ul>\n?<p>/g, '</ul><p class="text-muted-foreground">');
 
-  const mediaPreviewUrl = URL.createObjectURL(mediaFile);
+  const isImage = mediaUrl.startsWith('data:image') || mediaName.match(/\.(jpeg|jpg|gif|png|webp)$/i);
+  const isVideo = mediaUrl.startsWith('data:video') || mediaName.match(/\.(mp4|mkv|webm)$/i);
+  const isAudio = mediaUrl.startsWith('data:audio') || mediaName.match(/\.(mp3|wav|ogg)$/i);
 
   return (
     <Card className="border-border">
@@ -188,31 +192,33 @@ export default function ResultsDisplay({ result, mediaFile }: ResultsDisplayProp
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-center">Input Media</h3>
                 <div className="max-w-md mx-auto">
-                    {mediaFile.type.startsWith('image/') ? (
+                    {isImage ? (
                       <Image
                         ref={mediaPreviewRef as React.Ref<HTMLImageElement>}
-                        src={mediaPreviewUrl}
+                        src={mediaUrl}
                         alt="Input media preview"
                         width={400}
                         height={400}
                         className="rounded-lg w-full h-auto object-contain"
                         crossOrigin="anonymous"
                       />
-                    ) : mediaFile.type.startsWith('video/') ? (
+                    ) : isVideo ? (
                       <video
                         ref={mediaPreviewRef as React.Ref<HTMLVideoElement>}
-                        src={mediaPreviewUrl}
+                        src={mediaUrl}
                         controls
                         className="rounded-lg w-full"
                         crossOrigin="anonymous"
                       />
-                    ) : (
+                    ) : isAudio ? (
                       <audio
                         ref={mediaPreviewRef as React.Ref<HTMLAudioElement>}
-                        src={mediaPreviewUrl}
+                        src={mediaUrl}
                         controls
                         className="rounded-lg w-full"
                       />
+                    ) : (
+                      <div className="text-center text-muted-foreground p-4">Media preview not available.</div>
                     )}
                   </div>
               </div>

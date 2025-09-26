@@ -1,7 +1,10 @@
+
 'use server';
 
 import { generateTamperReport, type GenerateTamperReportOutput } from '@/ai/flows/generate-tamper-heatmaps';
 import axios from 'axios';
+
+type AnalyzeUrlSuccess = GenerateTamperReportOutput & { mediaDataUri: string };
 
 export async function performAnalysis(mediaDataUri: string): Promise<GenerateTamperReportOutput | { error: string }> {
   if (!mediaDataUri || typeof mediaDataUri !== 'string') {
@@ -17,7 +20,7 @@ export async function performAnalysis(mediaDataUri: string): Promise<GenerateTam
   }
 }
 
-export async function analyzeUrl(url: string): Promise<GenerateTamperReportOutput | { error: string }> {
+export async function analyzeUrl(url: string): Promise<AnalyzeUrlSuccess | { error: string }> {
   try {
     const response = await axios.get(url, {
       responseType: 'arraybuffer',
@@ -32,7 +35,12 @@ export async function analyzeUrl(url: string): Promise<GenerateTamperReportOutpu
     const buffer = Buffer.from(response.data, 'binary');
     const mediaDataUri = `data:${contentType};base64,${buffer.toString('base64')}`;
     
-    return await performAnalysis(mediaDataUri);
+    const analysisResult = await performAnalysis(mediaDataUri);
+    if ('error' in analysisResult) {
+      return analysisResult;
+    }
+
+    return { ...analysisResult, mediaDataUri };
 
   } catch (e: any) {
     console.error("URL Analysis failed:", e);
@@ -40,7 +48,7 @@ export async function analyzeUrl(url: string): Promise<GenerateTamperReportOutpu
     if (e.code === 'ERR_BAD_REQUEST' || e.response?.status === 404) {
       return { error: 'Could not access the URL. Please check if it is correct and publicly accessible.' };
     }
-    if (e.code === 'ERR_CONTENT_LENGTH_MISMATCH') {
+    if (e.code === 'ERR_CONTENT_LENGTH_MISMATCH' || e.message.includes('maxContentLength')) {
       return { error: 'The file at the URL is too large to process.'}
     }
 
