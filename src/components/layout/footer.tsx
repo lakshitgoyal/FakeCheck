@@ -41,13 +41,8 @@ export default function Footer() {
         </div>
 
         <div>
-          <h4 className="font-semibold mb-3">Developers</h4>
+          <h4 className="font-semibold mb-3">Resources</h4>
           <ul className="space-y-2 text-sm">
-            <li>
-              <Link href="/api-docs" className="text-muted-foreground hover:text-primary">
-                API Docs
-              </Link>
-            </li>
             <li>
               <Link href="/security" className="text-muted-foreground hover:text-primary">
                 Security

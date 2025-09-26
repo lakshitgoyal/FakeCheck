@@ -62,7 +62,7 @@ export default function Home() {
                   <Link href="/demo">Try Live Demo</Link>
                 </Button>
                 <Button asChild size="lg" variant="outline">
-                  <Link href="/api-docs">View API Docs</Link>
+                  <Link href="/contact">Contact Sales</Link>
                 </Button>
               </div>
             </div>

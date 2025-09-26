@@ -12,7 +12,6 @@ const navLinks = [
   { href: "/demo", label: "Live Demo" },
   { href: "/how-it-works", label: "How It Works" },
   { href: "/features", label: "Features" },
-  { href: "/api-docs", label: "API" },
   { href: "/pricing", label: "Pricing" },
   { href: "/security", label: "Security" },
 ];
