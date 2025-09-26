@@ -15,6 +15,7 @@ const navLinks = [
   { href: "/fake-index", label: "Fake Index", auth: true },
   { href: "/training", label: "Training", auth: true },
   { href: "/how-it-works", label: "How It Works" },
+  { href: "/extension", label: "Extension" },
   { href: "/features", label: "Features" },
   { href: "/pricing", label: "Pricing" },
   { href: "/security", label: "Security" },
