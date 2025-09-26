@@ -1,6 +1,6 @@
 "use client";
 
-import type { GenerateTamperReportOutput } from "@/ai/flows/generate-tamper-heatmaps";
+import type { GenerateTamperReportOutput } from "@/ai/flows/generate-tamper-report";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,7 +18,7 @@ interface ResultsDisplayProps {
 
 export default function ResultsDisplay({ result, mediaFile }: ResultsDisplayProps) {
   const reportRef = useRef<HTMLDivElement>(null);
-  const mediaPreviewRef = useRef<HTMLImageElement | HTMLVideoElement>(null);
+  const mediaPreviewRef = useRef<HTMLImageElement | HTMLVideoElement | HTMLAudioElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
 
   const getVerdictStyles = (verdict: string) => {
@@ -63,12 +63,12 @@ export default function ResultsDisplay({ result, mediaFile }: ResultsDisplayProp
     pdf.setFontSize(12);
     pdf.text("Verdict:", margin, margin + 30);
     pdf.setFontSize(16);
-    pdf.text(result.verdict, margin + 45, margin + 30);
+    pdf.text(result.verdict, margin + 65, margin + 30);
 
     let yPos = margin + 60;
 
     // Media Preview
-    if (mediaPreviewRef.current) {
+    if (mediaPreviewRef.current && !(mediaPreviewRef.current instanceof HTMLAudioElement)) {
         pdf.setFontSize(14);
         pdf.text("Input Media Preview", margin, yPos);
         yPos += 20;
@@ -105,7 +105,12 @@ export default function ResultsDisplay({ result, mediaFile }: ResultsDisplayProp
              pdf.setTextColor(255, 255, 255);
              yPos += 20;
         }
+    } else {
+        pdf.setFontSize(12);
+        pdf.text(`Input File: ${mediaFile.name}`, margin, yPos);
+        yPos += 20;
     }
+
 
     // Report Content
     pdf.setFontSize(14);
@@ -117,8 +122,8 @@ export default function ResultsDisplay({ result, mediaFile }: ResultsDisplayProp
     
     pdf.setFontSize(10);
     const reportText = result.report
-      .replace(/### (.*?)\n/g, '@@@$1\n') // Mark headers
-      .replace(/\* (.*?)\n/g, '  • $1\n'); // Mark list items
+      .replace(/### (.*?)\\n/g, '@@@$1\\n') // Mark headers
+      .replace(/\\* (.*?)\\n/g, '  • $1\\n'); // Mark list items
 
     const lines = pdf.splitTextToSize(reportText, contentWidth);
     
@@ -193,13 +198,20 @@ export default function ResultsDisplay({ result, mediaFile }: ResultsDisplayProp
                         className="rounded-lg w-full h-auto object-contain"
                         crossOrigin="anonymous"
                       />
-                    ) : (
+                    ) : mediaFile.type.startsWith('video/') ? (
                       <video
                         ref={mediaPreviewRef as React.Ref<HTMLVideoElement>}
                         src={mediaPreviewUrl}
                         controls
                         className="rounded-lg w-full"
                         crossOrigin="anonymous"
+                      />
+                    ) : (
+                      <audio
+                        ref={mediaPreviewRef as React.Ref<HTMLAudioElement>}
+                        src={mediaPreviewUrl}
+                        controls
+                        className="rounded-lg w-full"
                       />
                     )}
                   </div>

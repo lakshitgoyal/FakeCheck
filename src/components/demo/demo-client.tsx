@@ -5,10 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ImageIcon, VideoIcon, WebcamIcon, Loader2 } from 'lucide-react';
+import { ImageIcon, VideoIcon, FileAudio, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { performAnalysis } from '@/lib/actions';
-import type { GenerateTamperReportOutput } from '@/ai/flows/generate-tamper-heatmaps';
+import type { GenerateTamperReportOutput } from '@/ai/flows/generate-tamper-report';
 import ResultsDisplay from './results-display';
 
 type AnalysisResult = GenerateTamperReportOutput | { error: string };
@@ -32,7 +32,7 @@ export default function DemoClient() {
     if (!file) {
       toast({
         title: 'No file selected',
-        description: 'Please select an image or video file to analyze.',
+        description: 'Please select an image, video, or audio file to analyze.',
         variant: 'destructive',
       });
       return;
@@ -83,7 +83,7 @@ export default function DemoClient() {
         )}
       </Button>
       <p className="text-xs text-center text-muted-foreground">
-        {type === 'Image' ? 'PNG/JPEG up to 25MB.' : 'MP4/MKV up to 200MB.'}
+        {type === 'Image' ? 'PNG/JPEG up to 25MB.' : type === 'Video' ? 'MP4/MKV up to 200MB.' : 'MP3/WAV/FLAC up to 50MB.'}
       </p>
     </div>
   );
@@ -95,7 +95,7 @@ export default function DemoClient() {
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="image"><ImageIcon className="mr-2" />Image</TabsTrigger>
             <TabsTrigger value="video"><VideoIcon className="mr-2" />Video</TabsTrigger>
-            <TabsTrigger value="webcam" disabled><WebcamIcon className="mr-2" />Webcam</TabsTrigger>
+            <TabsTrigger value="audio"><FileAudio className="mr-2" />Audio</TabsTrigger>
           </TabsList>
           <TabsContent value="image" className="pt-4">
             {renderUploadForm("image/png, image/jpeg", "Image")}
@@ -103,15 +103,15 @@ export default function DemoClient() {
           <TabsContent value="video" className="pt-4">
             {renderUploadForm("video/mp4, video/mkv", "Video")}
           </TabsContent>
-          <TabsContent value="webcam" className="pt-4 text-center text-muted-foreground">
-            <p>Webcam analysis is coming soon!</p>
+          <TabsContent value="audio" className="pt-4">
+            {renderUploadForm("audio/mpeg, audio/wav, audio/flac", "Audio")}
           </TabsContent>
         </Tabs>
 
         {isLoading && (
             <div className="mt-6 text-center">
                 <p className="text-sm text-muted-foreground">Processing... this may take a few moments.</p>
-                <p className="text-xs text-muted-foreground mt-1">Face detection → Temporal analysis → Artifact scoring → Results</p>
+                <p className="text-xs text-muted-foreground mt-1">File analysis → Artifact scoring → Report generation</p>
             </div>
         )}
 
