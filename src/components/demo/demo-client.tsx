@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { performAnalysis, analyzeUrl } from '@/lib/actions';
 import type { GenerateTamperReportOutput } from '@/ai/flows/generate-tamper-heatmaps';
 import ResultsDisplay from './results-display';
+import Image from 'next/image';
 
 type AnalysisResult = GenerateTamperReportOutput | { error: string };
 
@@ -120,7 +121,7 @@ export default function DemoClient() {
   
   const currentMediaName = file?.name || url.substring(url.lastIndexOf('/') + 1) || 'media';
 
-  if (result) {
+  if (result && !('error' in result)) {
     return (
       <ResultsDisplay
         result={result as GenerateTamperReportOutput}
@@ -162,7 +163,7 @@ export default function DemoClient() {
                   <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
                   <p className="text-xs text-muted-foreground">MP4, MKV, WEBM</p>
                 </div>
-                <Input id="video-upload" type="file" className="hidden" accept="video/*" onChange={handleFileChange} />
+                <Input id="video-upload" type="file" className="hidden" accept="video/*" onChange={handleFilechange} />
               </label>
               <Button onClick={handleFileAnalysis} disabled={isLoading || !file} className="w-full">
                 {isLoading ? <Loader2 className="animate-spin" /> : 'Analyze Video'}
