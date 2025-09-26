@@ -5,7 +5,7 @@ const isProtectedRoute = createRouteMatcher([
   '/fake-index(.*)',
   '/training(.*)',
   '/verification-badge(.*)',
-]);
+]); 
 
 export default clerkMiddleware((auth, req) => {
   if (isProtectedRoute(req)) {
