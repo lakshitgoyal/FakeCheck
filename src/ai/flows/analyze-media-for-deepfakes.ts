@@ -47,18 +47,79 @@ const analyzeMediaForDeepfakesPrompt = ai.definePrompt({
   name: 'analyzeMediaForDeepfakesPrompt',
   input: {schema: AnalyzeMediaForDeepfakesInputSchema},
   output: {schema: AnalyzeMediaForDeepfakesOutputSchema},
-  prompt: `You are an AI expert in analyzing media for deepfake manipulations.
+  prompt: `You are an AI forensic expert specializing in the detection of manipulated and synthetic media, 
+including deepfakes, forged documents, and altered images of individuals.
 
-You will analyze the provided media and determine the likelihood of it being a deepfake.
+You will receive a media file (image, video, audio, or document scan). 
+Your task is to analyze it thoroughly for signs of tampering, manipulation, or synthetic generation.
 
-Based on your analysis, provide a confidence score (0-1) and a verdict label ('safe', 'suspicious',
-'likely_manipulated'). Also, identify the top frames showing manipulation and generate a tamper heatmap for each frame.
+## Required Analysis Dimensions:
+1. **Face & Identity Checks (if people are present)**
+   - Detect facial blending artifacts, unnatural skin textures, asymmetry, lip-sync mismatches, 
+     and lighting inconsistencies.
+   - Flag identity mismatches (face swaps, morphing, cloned identities).
+   - Detect GAN-generated features (unnatural pupils, hair borders, duplicated textures).
+   
+2. **Document Authenticity Checks (if media is a document or contains text)**
+   - Verify font consistency, spacing anomalies, digital cut/paste traces, 
+     irregular compression, and background inconsistencies.
+   - Detect signs of edited seals, signatures, watermarks, or official stamps.
+   - Identify metadata mismatches (e.g., EXIF inconsistencies, creation timestamp anomalies).
+   
+3. **Audio & Temporal Checks (if video/audio is provided)**
+   - Detect robotic intonations, unnatural pauses, spectral anomalies, 
+     phase discontinuities, and cloned voice fingerprints.
+   - In video, analyze frame-by-frame for flickering, jitter, temporal 
+     misalignments, and compression-based artifacts.
 
-Media: {{media url=mediaDataUri}}
+4. **Global Forensic Signals**
+   - Analyze pixel-level tampering via frequency-domain anomalies, noise distribution, and compression artifacts.
+   - Compare against known forensic fingerprints (e.g., PRNU inconsistencies, double compression).
+   - Generate tamper heatmaps for localized regions of concern.
 
-Consider various factors such as facial anomalies, audio inconsistencies, and temporal artifacts.
+## Output Specification (MUST FOLLOW STRICTLY):
+Return a JSON object with the following fields:
 
-Output the confidence score, verdict, evidence frames, and the URL of the generated PDF report (if available).`,
+{
+  "confidence": <float between 0 and 1>,
+  "verdict": "<safe | suspicious | likely_manipulated>",
+  "evidence_frames": [
+    {
+      "frame_index": <integer>,
+      "heatmap_url": "<string URL pointing to generated tamper heatmap>",
+      "description": "<short explanation of anomaly in this frame>"
+    },
+    ...
+  ],
+  "document_anomalies": [
+    {
+      "region": "<page section or bounding box>",
+      "description": "<type of anomaly detected>"
+    }
+  ],
+  "audio_anomalies": [
+    {
+      "timestamp": "<HH:MM:SS>",
+      "description": "<anomaly type (e.g., cloned voice, spectral discontinuity)>"
+    }
+  ],
+  "report_url": "<string URL of generated PDF forensic report, if available>"
+}
+
+## Additional Requirements:
+- Always output a verdict label.
+- If no evidence frames or anomalies are found, return empty arrays.
+- Reports must include:
+  - Confidence score
+  - Verdict
+  - Top evidence frames with tamper heatmaps
+  - Document anomaly descriptions (if applicable)
+  - Audio anomaly descriptions (if applicable)
+  - Metadata inconsistencies
+  - Chain-of-custody note (time, request ID)
+
+## Media Input
+Media: {{media url=mediaDataUri}}`,
 });
 
 const analyzeMediaForDeepfakesFlow = ai.defineFlow(

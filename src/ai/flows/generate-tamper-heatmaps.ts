@@ -38,18 +38,59 @@ const prompt = ai.definePrompt({
   name: 'generateTamperReportPrompt',
   input: {schema: GenerateTamperReportInputSchema},
   output: {schema: GenerateTamperReportOutputSchema},
-  prompt: `You are an AI-powered deepfake detection system. You will analyze the provided image or video and generate a detailed report in markdown format, highlighting areas of potential manipulation. You will also return a verdict label based on the analysis. Here is the media to analyze: {{media url=mediaDataUri}}.
+  prompt: `You are an AI-powered forensic deepfake detection system.  
+Your task is to analyze the provided image or video and generate a comprehensive forensic report in **Markdown format**, highlighting all potential indicators of manipulation.  
+You must also assign a **verdict label** based on the findings.
 
-Verdict Guidelines:
-- If manipulation is almost certain: Likely Manipulated
-- If there are suspicious signs but no certainty: Suspicious
-- If no signs of manipulation are found: Safe
+Media to analyze: {{media url=mediaDataUri}}
 
-Your report should be structured with the following sections:
-- **Overall Assessment**: A summary of your findings.
-- **Key Indicators**: A bulleted list of specific findings (e.g., "Unnatural lighting on subject's face", "Inconsistencies in background details").
-- **Detailed Analysis**: A more in-depth explanation of the indicators, including technical details. For example, if you find lighting inconsistencies, explain *why* they are inconsistent (e.g., "The key light on the subject is coming from the left, while shadows in the background indicate a light source from the right."). If you see compression artifacts, mention the type (e.g., "Noticeable blockiness in the 8x8 pixel grid around the subject's mouth, suggesting re-compression.").
-- **Forensic Traces**: Discuss any low-level signs of manipulation, such as sensor noise inconsistencies, color filter array (CFA) pattern anomalies, or Photo Response Non-Uniformity (PRNU) mismatches. Be specific where possible.`,
+---
+
+## Verdict Guidelines
+- **Likely Manipulated** → Clear, strong evidence of tampering or synthetic generation.  
+- **Suspicious** → Noticeable anomalies that may indicate manipulation, but not conclusive.  
+- **Safe** → No meaningful signs of manipulation detected.  
+
+---
+
+## Report Structure (must follow strictly)
+
+### **Overall Assessment**
+- Provide a concise summary of the findings in 2–3 sentences.
+- Explicitly state the **verdict label** ("Safe", "Suspicious", or "Likely Manipulated").  
+- Mention the confidence level (0–1, two decimal places).
+
+### **Key Indicators**
+- Bullet-point list of the most relevant anomalies.  
+- Examples:  
+  - "Unnatural lighting on subject’s face."  
+  - "Mismatched lip-sync between audio and mouth movements."  
+  - "Inconsistencies in font size and spacing within document header."  
+
+### **Detailed Analysis**
+- Expand on each indicator with technical reasoning.  
+- Examples:  
+  - *Lighting:* "Key light on subject appears from the left, but shadows fall rightward, suggesting compositing."  
+  - *Compression:* "Noticeable blockiness in 8×8 macroblocks around the mouth indicates multiple rounds of JPEG compression."  
+  - *Face Swap:* "Jawline shows blending artifacts and mismatched skin texture, consistent with GAN-based reenactment."  
+- If no anomalies found, state: *“No inconsistencies observed beyond normal compression or sensor noise.”*
+
+### **Forensic Traces**
+- Low-level forensic evidence, where available:  
+  - **Sensor Noise / PRNU:** Check for inconsistencies in Photo Response Non-Uniformity patterns.  
+  - **CFA Pattern Anomalies:** Look for irregularities in color filter array interpolation.  
+  - **Metadata & Encoding:** Mention discrepancies in EXIF data, inconsistent timestamps, or re-encoding traces.  
+  - **Temporal Artifacts (for video):** Flicker, ghosting, or frame-to-frame inconsistencies.  
+  - **Audio Anomalies (if applicable):** Spectral discontinuities, robotic harmonics, or cloned voice signatures.  
+
+---
+
+## Output Requirements
+- Report **must** be in Markdown.  
+- Use clear section headers and bullet points where specified.  
+- Always include a **verdict label**.  
+- Always include a **confidence score (0–1)**.  
+- If no anomalies are found, explicitly state that no manipulation was detected.`,
 });
 
 const generateTamperReportFlow = ai.defineFlow(
@@ -59,58 +100,7 @@ const generateTamperReportFlow = ai.defineFlow(
     outputSchema: GenerateTamperReportOutputSchema,
   },
   async input => {
-    // In a real app, you would call an AI model. For this demo, we'll use a mock.
-    const mockRandomValue = Math.random();
-    let mockVerdict: 'Safe' | 'Suspicious' | 'Likely Manipulated' = 'Safe';
-    let mockReport = `### Overall Assessment
-The provided media appears to be authentic. No significant indicators of manipulation were detected.
-
-### Key Indicators
-*   Consistent lighting and shadows across all subjects and background elements.
-*   No obvious signs of digital alteration, such as smudging, cloning, or warping.
-*   Background details are sharp and consistent with the overall scene.
-
-### Detailed Analysis
-A thorough review of the media file shows no significant signs of manipulation. The lighting is consistent across the entire frame, and there are no discernible artifacts that would suggest digital editing or AI generation. The shadows cast by objects align with a single, consistent light source.
-
-### Forensic Traces
-Our low-level analysis did not reveal any anomalies. The camera sensor noise pattern is uniform throughout the image, and the Color Filter Array (CFA) interpolation patterns are consistent with a single capture device. No PRNU mismatches were found.`;
-
-    if (mockRandomValue > 0.75) {
-      mockVerdict = 'Likely Manipulated';
-      mockReport = `### Overall Assessment
-The media shows strong indicators of manipulation, consistent with AI-powered "deepfake" techniques.
-
-### Key Indicators
-*   Inconsistent lighting between the primary subject and the background.
-*   Blurry or distorted edges around the subject's head and shoulders.
-*   Unusual block-based compression artifacts detected in the background, particularly in low-texture areas.
-
-### Detailed Analysis
-The subject appears to be digitally inserted into the scene. The lighting on the subject's face (soft, diffused) does not match the harsh, direct sunlight seen in the environment. There are noticeable artifacts around the edges of the subject's hair and clothing, suggesting a sloppy composite. These are common signs of a deepfake or digital composite.
-
-### Forensic Traces
-Forensic analysis reveals a significant mismatch in the Photo Response Non-Uniformity (PRNU) pattern between the subject's face and the rest of the image. This strongly suggests that the facial region was sourced from a different camera than the one that captured the original image. Additionally, we noted inconsistencies in the JPEG quantization tables, indicating re-compression.`;
-    } else if (mockRandomValue > 0.4) {
-      mockVerdict = 'Suspicious';
-      mockReport = `### Overall Assessment
-The media contains some suspicious artifacts that warrant closer inspection, but we cannot definitively conclude it has been manipulated.
-
-### Key Indicators
-*   Minor lighting inconsistencies near the subject's jawline.
-*   Slightly unnatural texture on the subject's skin, appearing overly smooth.
-*   Some edge pixels around the hair appear sharper than in other parts of the image.
-
-### Detailed Analysis
-While not definitive, there are some subtle signs that could indicate manipulation. The skin texture appears overly smooth in some areas, which can be a byproduct of some AI-based facial enhancement or generation techniques. The lighting difference is minor but deviates from what would be expected given the single light source.
-
-### Forensic Traces
-Our tools detected a minor anomaly in the Color Filter Array (CFA) pattern in a small region on the subject's cheek, which could be an artifact of resampling or splicing. However, the evidence is not strong enough to make a high-confidence determination. Further analysis would be needed to confirm.`;
-    }
-
-    return {
-      report: mockReport,
-      verdict: mockVerdict,
-    };
+    const {output} = await prompt(input);
+    return output!;
   }
 );
