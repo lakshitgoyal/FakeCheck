@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FakeCheck Analysis</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="/icons/icon48.png" alt="logo" class="logo">
+      <h1>FakeCheck</h1>
+    </div>
+    <div id="content">
+      <p id="message">Right-click an image or video to analyze it.</p>
+    </div>
+    <div id="results" class="hidden">
+      <div class="media-preview-container">
+        <img id="media-preview" src="" alt="Analyzed media">
+      </div>
+      <h2 id="verdict"></h2>
+      <p id="report-summary"></p>
+      <a id="report-link" href="#" target="_blank" class="button hidden">View Full Report</a>
+    </div>
+    <div id="error" class="hidden">
+      <h3>Analysis Failed</h3>
+      <p id="error-message"></p>
+    </div>
+    <a href="options.html" target="_blank" class="options-link">Settings</a>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FakeCheck Options</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <h1>FakeCheck Settings</h1>
+
+    <div class="form-group">
+      <label for="apiKey">API Key</label>
+      <input type="password" id="apiKey" placeholder="Enter your FakeCheck API key">
+      <p class="description">Your API key is required to analyze media. You can find it on your FakeCheck dashboard (after signing up on the website).</p>
+    </div>
+
+    <div class="form-group">
+      <label for="overlayEnabled" class="checkbox-label">
+        <input type="checkbox" id="overlayEnabled">
+        Enable "Verified" badge overlay on 'Safe' media
+      </label>
+      <p class="description">Automatically show a badge on media that is verified as "Safe" by FakeCheck.</p>
+    </div>
+
+    <button id="save">Save Settings</button>
+    <div id="status"></div>
+  </div>
+  <script src="options.js"></script>
+</body>
+</html>

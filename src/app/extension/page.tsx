@@ -1,8 +1,8 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { ArrowRight, CheckCircle, Search, ShieldCheck } from "lucide-react";
+import { ArrowRight, CheckCircle, Search, ShieldCheck, Download } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,43 +19,46 @@ const extensionImage = PlaceHolderImages.find(
 const howItWorksSteps = [
     {
         icon: <Search className="h-10 w-10 text-primary" />,
-        title: "1. Detect Media on Screen",
-        description: "The extension automatically scans any active webpage for images and videos as you browse and play them."
+        title: "1. Right-Click Media",
+        description: "While browsing, simply right-click on any image or video you want to verify."
     },
     {
         icon: <ShieldCheck className="h-10 w-10 text-primary" />,
-        title: "2. Analyze with FakeCheck AI",
-        description: "With one click, media is securely sent to FakeCheck’s backend for our advanced deepfake detection analysis."
+        title: "2. Analyze with One Click",
+        description: "Select 'Analyze with FakeCheck' from the menu. The media is securely sent to our AI for deep analysis."
     },
     {
         icon: <CheckCircle className="h-10 w-10 text-primary" />,
-        title: "3. Instant Report",
-        description: "Results (Safe, Suspicious, or Manipulated) are shown directly in the extension, with a link to the full forensic report."
+        title: "3. Get Instant Results",
+        description: "A verdict (Safe, Suspicious, or Manipulated) appears in the extension popup. 'Safe' media gets a verified badge on the page."
     }
 ]
 
 const features = [
-    "Automatic detection of images and videos.",
-    "One-click analysis from the browser toolbar.",
+    "One-click analysis via the context menu.",
+    "Works with images, videos, and audio on major platforms.",
     "Displays confidence score & verdict instantly.",
-    "Option to download full PDF forensic report.",
-    "Verified badge overlay for safe media (optional toggle).",
-    "Works with major platforms (social media, news sites, etc.).",
-    "Privacy-first: no data stored beyond analysis."
+    "Optional 'Verified' badge overlay for safe media.",
+    "Secure API key handling.",
+    "Lightweight and privacy-first design.",
 ];
 
 const faqs = [
     {
         question: "Does it slow down my browsing?",
-        answer: "No, the extension is optimized for performance. It only activates its core analysis functions when you interact with media, ensuring a smooth browsing experience."
+        answer: "No, the extension is extremely lightweight and optimized for performance. It only uses resources when you explicitly right-click and request an analysis."
     },
     {
-        question: "Can I turn off automatic detection?",
-        answer: "Yes, you have full control. You can toggle automatic scanning on or off at any time directly from the extension's settings panel."
+        question: "Can I turn off the overlay badge?",
+        answer: "Yes, you have full control. You can toggle the verified badge overlay on or off at any time from the extension's settings panel."
     },
     {
         question: "Does it work offline?",
         answer: "No, an internet connection is required. The analysis is performed by our powerful backend AI models, which cannot run locally in your browser."
+    },
+     {
+        question: "Is my browsing data secure?",
+        answer: "Absolutely. The extension only sends the URL of the specific media you choose to analyze. All communication with our API is encrypted, and we do not store your media after the analysis is complete."
     }
 ]
 
@@ -70,12 +73,12 @@ export default function ExtensionPage() {
                 <p className="mt-6 max-w-3xl mx-auto text-lg text-muted-foreground">
                     Real-time deepfake detection, directly in your browser.
                 </p>
-                <div className="mt-10 flex justify-center gap-4">
+                <div className="mt-10 flex flex-col sm:flex-row justify-center items-center gap-4">
                      <Button asChild className="btn-gradient" size="lg">
-                        <Link href="https://chrome.google.com/webstore" target="_blank">Install Chrome Extension</Link>
+                        <Link href="https://github.com/lakshitgoyal/FakeCheck-Chrome-Extension" target="_blank">Install from Chrome Web Store</Link>
                     </Button>
                     <Button variant="outline" size="lg" asChild>
-                         <Link href="#">View Setup Guide</Link>
+                         <Link href="https://github.com/lakshitgoyal/FakeCheck-Chrome-Extension/archive/refs/heads/main.zip" target="_blank">Download Extension (ZIP) <Download className="ml-2" /></Link>
                     </Button>
                 </div>
                  {extensionImage && (
@@ -109,7 +112,7 @@ export default function ExtensionPage() {
             {/* Features Section */}
             <section className="mb-20">
                 <h2 className="text-3xl font-bold text-center mb-12">Powerful Features</h2>
-                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
                     {features.map((feature, index) => (
                         <Card key={index} className="glassmorphism">
                             <CardContent className="p-6 flex items-center gap-4">
@@ -125,7 +128,7 @@ export default function ExtensionPage() {
             <section className="mb-20 text-center max-w-3xl mx-auto">
                 <h2 className="text-3xl font-bold mb-4">Security & Privacy First</h2>
                  <p className="text-muted-foreground">
-                    FakeCheck's Chrome Extension processes media securely and does not store or share your data. All analysis happens through encrypted requests to our servers, and your browsing activity remains private.
+                    FakeCheck's Chrome Extension processes media securely and does not store or share your data. All analysis happens through encrypted requests to our servers, and your browsing activity remains private. Set your own API key for full control.
                 </p>
             </section>
 
@@ -148,7 +151,7 @@ export default function ExtensionPage() {
             <section className="text-center bg-card glassmorphism p-10 rounded-lg">
                  <h2 className="text-3xl font-bold mb-4">Bring deepfake detection into your browser.</h2>
                  <Button asChild className="btn-gradient" size="lg">
-                    <Link href="https://chrome.google.com/webstore" target="_blank">Get Extension Now <ArrowRight className="ml-2"/></Link>
+                    <Link href="https://github.com/lakshitgoyal/FakeCheck-Chrome-Extension" target="_blank">Get Extension Now <ArrowRight className="ml-2"/></Link>
                 </Button>
             </section>
 
