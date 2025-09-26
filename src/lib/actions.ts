@@ -5,6 +5,37 @@ import axios from 'axios';
 
 type AnalyzeUrlSuccess = GenerateTamperReportOutput & { mediaDataUri: string };
 
+function getContentTypeFromUrl(url: string, headers: any): string | null {
+  // 1. Prefer the Content-Type header
+  const headerContentType = headers['content-type'];
+  if (headerContentType && (headerContentType.startsWith('image/') || headerContentType.startsWith('video/') || headerContentType.startsWith('audio/'))) {
+    return headerContentType;
+  }
+
+  // 2. Fallback to file extension
+  const extension = url.split('.').pop()?.toLowerCase().split('?')[0];
+  const mimeMap: { [key: string]: string } = {
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png',
+    'gif': 'image/gif',
+    'webp': 'image/webp',
+    'mp4': 'video/mp4',
+    'webm': 'video/webm',
+    'mkv': 'video/x-matroska',
+    'mp3': 'audio/mpeg',
+    'wav': 'audio/wav',
+    'ogg': 'audio/ogg',
+  };
+
+  if (extension && mimeMap[extension]) {
+    return mimeMap[extension];
+  }
+
+  return headerContentType; // Return original header if no match, for error message
+}
+
+
 export async function performAnalysis(mediaDataUri: string): Promise<GenerateTamperReportOutput | { error: string }> {
   if (!mediaDataUri || typeof mediaDataUri !== 'string') {
     return { error: 'Invalid media data URI provided.' };
@@ -26,7 +57,8 @@ export async function analyzeUrl(url: string): Promise<AnalyzeUrlSuccess | { err
       maxContentLength: 200 * 1024 * 1024, // 200MB limit
     });
     
-    const contentType = response.headers['content-type'];
+    const contentType = getContentTypeFromUrl(url, response.headers);
+
     if (!contentType || (!contentType.startsWith('image/') && !contentType.startsWith('video/') && !contentType.startsWith('audio/'))) {
       return { error: 'The URL does not point to a valid image, video, or audio file.' };
     }
