@@ -8,14 +8,11 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ImageIcon, VideoIcon, LinkIcon, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { performAnalysis } from '@/lib/actions';
+import { performAnalysis, analyzeUrl } from '@/lib/actions';
 import type { GenerateTamperReportOutput } from '@/ai/flows/generate-tamper-report';
 import ResultsDisplay from './results-display';
 
 type AnalysisResult = GenerateTamperReportOutput | { error: string };
-
-// Placeholder Data URI for a simple 1x1 black pixel PNG.
-const PLACEHOLDER_DATA_URI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 
 
 export default function DemoClient() {
@@ -29,12 +26,14 @@ export default function DemoClient() {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
+      setUrl('');
       setResult(null); 
     }
   };
 
   const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUrl(event.target.value);
+    setFile(null);
     setResult(null);
   };
 
@@ -81,7 +80,7 @@ export default function DemoClient() {
   const isValidUrl = (urlString: string) => {
     try {
       new URL(urlString);
-      return true;
+      return urlString.startsWith('http://') || urlString.startsWith('https://');
     } catch (e) {
       return false;
     }
@@ -109,22 +108,15 @@ export default function DemoClient() {
     setIsLoading(true);
     setResult(null);
 
-    // This is a simulated analysis. For security reasons, this tool cannot directly
-    // access and fetch content from external URLs. A production implementation
-    // would require a backend service to handle fetching.
-    toast({
-        title: 'Simulated Analysis',
-        description: 'URL analysis is for demonstration only. A placeholder is being analyzed.',
-    });
-    const analysisResult = await performAnalysis(PLACEHOLDER_DATA_URI);
+    const analysisResult = await analyzeUrl(url);
 
     if ('error' in analysisResult) {
         toast({
             title: 'Analysis Failed',
             description: analysisResult.error,
+            variant: 'destructive',
         });
     } else {
-        // Create a mock file object for the results display
         const mockFile = new File([''], new URL(url).pathname.split('/').pop() || 'analysis-from-url.jpg', { type: 'image/jpeg' });
         setFile(mockFile);
         setResult(analysisResult);
@@ -166,7 +158,7 @@ export default function DemoClient() {
             )}
         </Button>
         <p className="text-xs text-center text-muted-foreground">
-            Enter a direct URL to an image or video. Analysis is simulated.
+            Enter a direct URL to an image or video.
         </p>
     </div>
   );
@@ -207,5 +199,3 @@ export default function DemoClient() {
     </Card>
   );
 }
-
-    
