@@ -1,10 +1,8 @@
 import type { GenerateTamperReportOutput } from "@/ai/flows/generate-tamper-heatmaps";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { Download, Copy, Share2 } from "lucide-react";
 import Image from 'next/image';
 
 interface ResultsDisplayProps {
@@ -41,18 +39,16 @@ export default function ResultsDisplay({ result, mediaFile }: ResultsDisplayProp
         <CardTitle className="text-center text-2xl">Analysis Results</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid grid-cols-1 gap-6 text-center">
-          <div>
-            <h3 className="text-sm font-medium text-muted-foreground">Verdict</h3>
-            <Badge className={cn("text-lg mt-1", getVerdictStyles(result.verdict))}>
-              {result.verdict}
-            </Badge>
-          </div>
+        <div className="text-center">
+          <h3 className="text-sm font-medium text-muted-foreground">Verdict</h3>
+          <Badge className={cn("text-lg mt-1", getVerdictStyles(result.verdict))}>
+            {result.verdict}
+          </Badge>
         </div>
 
         <Separator />
         
-        <div className="grid md:grid-cols-2 gap-6 items-start">
+        <div className="grid grid-cols-1 gap-6 items-start">
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-center">Input Media</h3>
             <div className="max-w-md mx-auto">
@@ -76,19 +72,11 @@ export default function ResultsDisplay({ result, mediaFile }: ResultsDisplayProp
           <div className="space-y-4">
               <h3 className="text-lg font-semibold text-center">Evidence Report</h3>
               <Card>
-                  <CardContent className="p-6 prose prose-invert prose-sm max-w-none h-96 overflow-y-auto">
+                  <CardContent className="p-6 prose prose-invert prose-sm max-w-none h-[500px] overflow-y-auto">
                        <div dangerouslySetInnerHTML={{ __html: reportHTML }} />
                   </CardContent>
               </Card>
           </div>
-        </div>
-
-        <Separator />
-
-        <div className="flex flex-col sm:flex-row gap-2 justify-center">
-            <Button variant="outline"><Download className="mr-2" />Download Report (PDF)</Button>
-            <Button variant="outline"><Copy className="mr-2" />Copy JSON</Button>
-            <Button variant="outline"><Share2 className="mr-2" />Share Permalink</Button>
         </div>
       </CardContent>
     </Card>
