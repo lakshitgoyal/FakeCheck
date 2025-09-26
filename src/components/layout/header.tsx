@@ -82,7 +82,7 @@ export default function Header() {
 
         <div className="flex flex-1 items-center justify-end space-x-2">
           <Button asChild className="btn-gradient">
-            <Link href="/contact">Request Trial</Link>
+            <Link href="/contact">Contact Us</Link>
           </Button>
         </div>
       </div>
