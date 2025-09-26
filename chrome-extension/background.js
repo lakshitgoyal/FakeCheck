@@ -3,7 +3,7 @@
 // --- Setup & Initialization ---
 
 // Function to get API key from storage
-async function getApiKey() {
+async function getApiKey() { 
   const result = await chrome.storage.sync.get(['apiKey']);
   return result.apiKey;
 }
