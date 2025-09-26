@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "../icons/logo";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 const navLinks = [
   { href: "/demo", label: "Live Demo" },
@@ -80,10 +81,18 @@ export default function Header() {
           </Sheet>
         </div>
 
-        <div className="flex flex-1 items-center justify-end space-x-2">
-          <Button asChild className="btn-gradient">
-            <Link href="/contact">Contact Us</Link>
-          </Button>
+        <div className="flex flex-1 items-center justify-end space-x-4">
+          <SignedOut>
+            <Button variant="ghost" asChild>
+                <Link href="/sign-in">Sign In</Link>
+            </Button>
+            <Button asChild className="btn-gradient">
+                <Link href="/sign-up">Sign Up</Link>
+            </Button>
+          </SignedOut>
+          <SignedIn>
+            <UserButton afterSignOutUrl="/" />
+          </SignedIn>
         </div>
       </div>
     </header>

@@ -59,7 +59,7 @@ export default function Home() {
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
                 <Button asChild size="lg" className="btn-gradient">
-                  <Link href="/demo">Try Live Demo</Link>
+                  <Link href="/sign-up">Get Started for Free</Link>
                 </Button>
                 <Button asChild size="lg" variant="outline">
                   <Link href="/contact">Contact Sales</Link>
