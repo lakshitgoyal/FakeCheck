@@ -158,13 +158,13 @@ export default function DemoClient() {
           </TabsList>
           <TabsContent value="image" className="pt-4">
             {renderUploadForm("image/png, image/jpeg", "Image")}
-          </Tabs-Content>
+          </TabsContent>
           <TabsContent value="video" className="pt-4">
             {renderUploadForm("video/mp4, video/mkv", "Video")}
-          </Tabs-Content>
+          </TabsContent>
           <TabsContent value="url" className="pt-4">
             {renderUrlForm()}
-          </Tabs-Content>
+          </TabsContent>
         </Tabs>
 
         {isLoading && (
