@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ImageIcon, VideoIcon, FileAudio, Loader2 } from 'lucide-react';
+import { ImageIcon, VideoIcon, LinkIcon, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { performAnalysis } from '@/lib/actions';
 import type { GenerateTamperReportOutput } from '@/ai/flows/generate-tamper-report';
@@ -13,8 +13,13 @@ import ResultsDisplay from './results-display';
 
 type AnalysisResult = GenerateTamperReportOutput | { error: string };
 
+// Placeholder Data URI for a simple 1x1 black pixel PNG.
+const PLACEHOLDER_DATA_URI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+
+
 export default function DemoClient() {
   const [file, setFile] = useState<File | null>(null);
+  const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const { toast } = useToast();
@@ -22,17 +27,21 @@ export default function DemoClient() {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
-      // Add size validation if needed
       setFile(selectedFile);
-      setResult(null); // Clear previous results
+      setResult(null); 
     }
+  };
+
+  const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUrl(event.target.value);
+    setResult(null);
   };
 
   const handleAnalysis = async () => {
     if (!file) {
       toast({
         title: 'No file selected',
-        description: 'Please select an image, video, or audio file to analyze.',
+        description: 'Please select an image or video file to analyze.',
         variant: 'destructive',
       });
       return;
@@ -68,6 +77,37 @@ export default function DemoClient() {
     };
   };
 
+  const handleUrlAnalysis = async () => {
+    if (!url) {
+        toast({
+            title: 'No URL entered',
+            description: 'Please enter a URL to analyze.',
+            variant: 'destructive',
+        });
+        return;
+    }
+    setIsLoading(true);
+    setResult(null);
+
+    // Simulate analysis by using a placeholder.
+    // In a real implementation, the backend would fetch and process the URL.
+    const analysisResult = await performAnalysis(PLACEHOLDER_DATA_URI);
+
+    if ('error' in analysisResult) {
+        toast({
+            title: 'Analysis Failed',
+            description: analysisResult.error,
+            variant: 'destructive',
+        });
+    } else {
+        // Create a mock file object for the results display
+        const mockFile = new File([''], "analysis-from-url.jpg", { type: 'image/jpeg' });
+        setFile(mockFile);
+        setResult(analysisResult);
+    }
+    setIsLoading(false);
+  };
+
   const renderUploadForm = (accept: string, type: string) => (
     <div className="space-y-4">
       <Input type="file" accept={accept} onChange={handleFileChange} className="text-base" />
@@ -83,8 +123,27 @@ export default function DemoClient() {
         )}
       </Button>
       <p className="text-xs text-center text-muted-foreground">
-        {type === 'Image' ? 'PNG/JPEG up to 25MB.' : type === 'Video' ? 'MP4/MKV up to 200MB.' : 'MP3/WAV/FLAC up to 50MB.'}
+        {type === 'Image' ? 'PNG/JPEG up to 25MB.' : 'MP4/MKV up to 200MB.'}
       </p>
+    </div>
+  );
+
+  const renderUrlForm = () => (
+    <div className="space-y-4">
+        <Input type="url" placeholder="https://example.com/media.jpg" value={url} onChange={handleUrlChange} className="text-base" />
+        <Button onClick={handleUrlAnalysis} disabled={isLoading || !url} className="w-full btn-gradient">
+            {isLoading ? (
+                <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Analyzing URL...
+                </>
+            ) : (
+                'Analyze URL'
+            )}
+        </Button>
+        <p className="text-xs text-center text-muted-foreground">
+            Enter a direct URL to an image or video.
+        </p>
     </div>
   );
 
@@ -95,17 +154,17 @@ export default function DemoClient() {
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="image"><ImageIcon className="mr-2" />Image</TabsTrigger>
             <TabsTrigger value="video"><VideoIcon className="mr-2" />Video</TabsTrigger>
-            <TabsTrigger value="audio"><FileAudio className="mr-2" />Audio</TabsTrigger>
+            <TabsTrigger value="url"><LinkIcon className="mr-2" />URL</TabsTrigger>
           </TabsList>
           <TabsContent value="image" className="pt-4">
             {renderUploadForm("image/png, image/jpeg", "Image")}
-          </TabsContent>
+          </Tabs-Content>
           <TabsContent value="video" className="pt-4">
             {renderUploadForm("video/mp4, video/mkv", "Video")}
-          </TabsContent>
-          <TabsContent value="audio" className="pt-4">
-            {renderUploadForm("audio/mpeg, audio/wav, audio/flac", "Audio")}
-          </TabsContent>
+          </Tabs-Content>
+          <TabsContent value="url" className="pt-4">
+            {renderUrlForm()}
+          </Tabs-Content>
         </Tabs>
 
         {isLoading && (
